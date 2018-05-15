@@ -4,12 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.SubscribableChannel;
 
 @SpringBootApplication
+@EnableDiscoveryClient
 @EnableBinding(TodosSinkApp.SinkChannels.class)
 public class TodosSinkApp {
 
