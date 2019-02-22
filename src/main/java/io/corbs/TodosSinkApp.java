@@ -35,10 +35,10 @@ public class TodosSinkApp {
 
     interface SinkChannels {
         @Input
-        SubscribableChannel foo();
+        SubscribableChannel input();
     }
 
-    @StreamListener("foo")
+    @StreamListener("input")
     void createTodoListener(Todo todo) {
         LOG.info("TodosSinkApp createTodoListener handled todo " + todo.toString());
         if(!todo.getHashtags().isEmpty()) {

@@ -3,8 +3,8 @@ applications:
 - name: todos-sink
   memory: 1G
   routes:
-  - route: https://todos-sink.cfapps.io
+  - route: https://todos-sink.apps.retro.io
   path: target/todos-sink-1.0.0-SNAP.jar
-  buildpack: java_buildpack
+  buildpack: java_buildpack_offline
   services:
-  - rabbitmq
+  - todos-messaging
