@@ -1,9 +1,5 @@
 package io.corbs;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -13,41 +9,59 @@ import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.SubscribableChannel;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-class Todo {
-    private Integer id;
-    private String title = "";
-    private Boolean completed = false;
-    private Set<String> hashtags = Collections.emptySet();
-}
-
+/**
+ * Sink apps are Spring Boot apps that declare a "binding"
+ * and "channels" to communicate on.
+ *
+ * Sinks receive data and presumably do something with it,
+ * like save to a database, file-system or push events.
+ *
+ */
 @SpringBootApplication
 @EnableBinding(TodosSinkApp.SinkChannels.class)
 public class TodosSinkApp {
 
     private static final Logger LOG = LoggerFactory.getLogger(TodosSinkApp.class);
 
+    private Map<String, Set<Integer>> hashtagIndex = new HashMap<>();
+
+    /**
+     * Sinks receive information and thus need an input
+     */
     interface SinkChannels {
         @Input
         SubscribableChannel input();
     }
 
     @StreamListener("input")
-    void createTodoListener(Todo todo) {
-        LOG.info("TodosSinkApp createTodoListener handled todo " + todo.toString());
+    void sink(Todo todo) {
+        LOG.info("TodosSinkApp handled todo event " + todo.toString());
         if(!todo.getHashtags().isEmpty()) {
-            LOG.info("Oh look a Todo with #hashtags...this must be important.");
-            LOG.info("Hashtags: " + todo.getHashtags());
+            LOG.info("Hashtags on: " + todo.getId() + " hashtags:" + todo.getHashtags());
+            LOG.info("Adding to hashtagIndex");
+            updateIndex(todo.getHashtags(), todo);
+            LOG.info("Hashtag Index: " + hashtagIndex.toString());
         }
     }
 
-	public static void main(String[] args) {
+    void updateIndex(Set<String> hashtags, Todo todo) {
+        for(String tag : hashtags) {
+            if(hashtagIndex.containsKey(tag)) {
+                hashtagIndex.get(tag).add(todo.getId());
+            } else {
+                Set<Integer> ids = new HashSet<>();
+                ids.add(todo.getId());
+                hashtagIndex.put(tag, ids);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
 		SpringApplication.run(TodosSinkApp.class, args);
 	}
 }
