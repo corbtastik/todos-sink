@@ -4,4 +4,4 @@ spring:
         stream:
             bindings:
                 input:
-                    destination: todos-upper
+                    destination: todos-sink
