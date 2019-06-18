@@ -28,7 +28,7 @@ public class TodosSinkApp {
 
     private static final Logger LOG = LoggerFactory.getLogger(TodosSinkApp.class);
 
-    private Map<String, Set<Integer>> hashtagIndex = new HashMap<>();
+    private Map<String, Set<Long>> hashtagIndex = new HashMap<>();
 
     /**
      * Sinks receive information and thus need an input
@@ -54,7 +54,7 @@ public class TodosSinkApp {
             if(hashtagIndex.containsKey(tag)) {
                 hashtagIndex.get(tag).add(todo.getId());
             } else {
-                Set<Integer> ids = new HashSet<>();
+                Set<Long> ids = new HashSet<>();
                 ids.add(todo.getId());
                 hashtagIndex.put(tag, ids);
             }
